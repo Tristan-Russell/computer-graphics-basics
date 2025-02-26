@@ -132,7 +132,7 @@ This repository contains Python scripts demonstrating various 2D and 3D transfor
 ## Usage
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/graphics-transformations.git
+   git clone https://github.com/Tristan-Russell/computer-graphics-basics.git
    ```
 2. Navigate to the desired script:
    ```
@@ -150,4 +150,4 @@ This repository contains Python scripts demonstrating various 2D and 3D transfor
 - Matplotlib (`pip install matplotlib`)
 
 ## License
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License. See [LICENSE](https://github.com/Tristan-Russell/computer-graphics-basics/blob/main/LICENSE.md) for details.
