@@ -136,13 +136,17 @@ This repository contains Python scripts demonstrating various 2D and 3D transfor
    ```
 2. Navigate to the desired script:
    ```
-   cd graphics-transformations
+   cd computer-graphics-basics
    ```
-3. Run the script:
+3. Install Requirements 
+   ```
+   pip install -r requirements.txt
+   ```
+4. Run the script:
    ```
    python 3D_Translation.py
    ```
-4. View the console output and visualizations.
+5. View the console output and visualizations.
 
 ## Dependencies
 - Python 3.x
