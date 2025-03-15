@@ -1,49 +1,33 @@
 """
-3D Rotation around Z-axis using Homogeneous Coordinates
+3D Rotation around X, Y, and Z axes using Homogeneous Coordinates
 
-This script demonstrates how to perform a 3D rotation around the Z-axis using homogeneous coordinates. Rotation is a linear transformation that preserves distances and angles. In 3D homogeneous coordinates (x, y, z, 1), rotation around the Z-axis is represented by:
+This script demonstrates 3D rotations around the X, Y, and Z axes using homogeneous coordinates.
+Rotation matrices for each axis:
 
+Z-axis:
     [cosθ  -sinθ   0    0]
     [sinθ   cosθ   0    0]
     [ 0      0     1    0]
     [ 0      0     0    1]
 
-When this matrix multiplies a point [x, y, z, 1], it results in:
-    [xcosθ - ysinθ, xsinθ + ycosθ, z, 1]
+X-axis:
+    [1    0      0     0]
+    [0  cosθ  -sinθ   0]
+    [0  sinθ   cosθ   0]
+    [0    0      0    1]
 
-Examples included:
-    1. Rotating (1, 0, 0) by 90° becomes (0, 1, 0)
-    2. Rotating (0, 1, 0) by 180° becomes (0, -1, 0)
-    3. Rotating (2, 0, 3) by 45° becomes (√2, √2, 3)
+Y-axis:
+    [cosθ   0   sinθ   0]
+    [ 0     1    0     0]
+    [-sinθ  0   cosθ   0]
+    [ 0     0    0     1]
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 def rotate_3d_z(point, degrees):
-    """
-    Rotate a 3D point around the Z-axis using homogeneous coordinates.
-
-    Parameters
-    ----------
-    point : numpy.ndarray
-        A 4-element array representing the point in homogeneous coordinates.
-    degrees : float
-        Rotation angle in degrees (counterclockwise).
-
-    Returns
-    -------
-    numpy.ndarray
-        The rotated point in homogeneous coordinates.
-
-    Explanation:
-    ------------
-    The rotation matrix for Z-axis is:
-        [cosθ  -sinθ   0   0]
-        [sinθ   cosθ   0   0]
-        [ 0      0     1   0]
-        [ 0      0     0   1]
-    """
+    """Rotate around Z-axis."""
     theta = np.radians(degrees)
     c, s = np.cos(theta), np.sin(theta)
     rotation_matrix = np.array([
@@ -54,59 +38,136 @@ def rotate_3d_z(point, degrees):
     ])
     return rotation_matrix @ point
 
-def visualize_rotation_3d(original, rotated, angle):
-    """Visualize original and rotated points in 3D space."""
+def rotate_3d_x(point, degrees):
+    """Rotate around X-axis."""
+    theta = np.radians(degrees)
+    c, s = np.cos(theta), np.sin(theta)
+    rotation_matrix = np.array([
+        [1, 0,  0, 0],
+        [0, c, -s, 0],
+        [0, s,  c, 0],
+        [0, 0,  0, 1]
+    ])
+    return rotation_matrix @ point
+
+def rotate_3d_y(point, degrees):
+    """Rotate around Y-axis."""
+    theta = np.radians(degrees)
+    c, s = np.cos(theta), np.sin(theta)
+    rotation_matrix = np.array([
+        [c,  0, s, 0],
+        [0,  1, 0, 0],
+        [-s, 0, c, 0],
+        [0,  0, 0, 1]
+    ])
+    return rotation_matrix @ point
+
+def visualize_rotation_3d(original, rotated, angle, axis):
+    """Visualize rotation with correct axis."""
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(111, projection='3d')
     
-    # Plot points
     ax.scatter(*original[:3], color='b', s=50, label='Original')
     ax.scatter(*rotated[:3], color='r', s=50, label='Rotated')
     
-    # Draw rotation axis (Z-axis)
-    ax.plot([0, 0], [0, 0], [min(original[2], rotated[2])-2, max(original[2], rotated[2])+2], 
-            color='g', linestyle='--', label='Z-axis')
+    # Determine axis line coordinates
+    orig_coords = original[:3]
+    rot_coords = rotated[:3]
+    if axis == 'Z':
+        min_val, max_val = min(orig_coords[2], rot_coords[2]), max(orig_coords[2], rot_coords[2])
+        line = ([0, 0], [0, 0], [min_val-2, max_val+2])
+    elif axis == 'X':
+        min_val, max_val = min(orig_coords[0], rot_coords[0]), max(orig_coords[0], rot_coords[0])
+        line = ([min_val-2, max_val+2], [0, 0], [0, 0])
+    elif axis == 'Y':
+        min_val, max_val = min(orig_coords[1], rot_coords[1]), max(orig_coords[1], rot_coords[1])
+        line = ([0, 0], [min_val-2, max_val+2], [0, 0])
     
-    # Configuration
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    ax.set_title(f'3D Rotation ({angle}° around Z-axis)')
+    ax.plot(*line, color='g', linestyle='--', label=f'{axis}-axis')
+    ax.set_xlabel('X'); ax.set_ylabel('Y'); ax.set_zlabel('Z')
+    ax.set_title(f'3D Rotation ({angle}° around {axis}-axis)')
     ax.legend()
     plt.show()
 
-def run_rotation_example(x, y, z, degrees):
-    """Run and explain a rotation example."""
+def run_rotation_example(x, y, z, degrees, axis):
+    """Run rotation example for specified axis."""
     point = np.array([x, y, z, 1])
-    rotated = rotate_3d_z(point, degrees)
     theta = np.radians(degrees)
     c, s = np.cos(theta), np.sin(theta)
     
-    print("-------------------------------------------------------")
-    print(f"Example: Rotating ({x}, {y}, {z}) by {degrees}° around Z-axis")
-    print("-------------------------------------------------------")
-    print("Step 1: Homogeneous coordinates:")
-    print(f"         Original point: {point}")
-    print("\nStep 2: Rotation matrix:")
-    print(f"        [{c:.2f}  {-s:.2f}  0  0]")
-    print(f"        [{s:.2f}   {c:.2f}  0  0]")
-    print(f"        [ 0     0   1  0]")
-    print(f"        [ 0     0   0  1]")
-    print("\nStep 3: Apply rotation formulas:")
-    print(f"        x' = x*cosθ - y*sinθ = {x:.2f}*{c:.2f} - {y:.2f}*{s:.2f}")
-    print(f"        y' = x*sinθ + y*cosθ = {x:.2f}*{s:.2f} + {y:.2f}*{c:.2f}")
-    print(f"        z' remains {z}")
-    print("\nResult:")
-    print(f"        Calculated: [{x*c - y*s:.2f}, {x*s + y*c:.2f}, {z}, 1]")
-    print(f"        Actual:     {rotated}")
-    visualize_rotation_3d(point, rotated, degrees)
+    # Select rotation function
+    if axis == 'Z':
+        rotated = rotate_3d_z(point, degrees)
+    elif axis == 'X':
+        rotated = rotate_3d_x(point, degrees)
+    elif axis == 'Y':
+        rotated = rotate_3d_y(point, degrees)
+    
+    # Matrix and formula explanations
+    if axis == 'Z':
+        matrix = [
+            f"[{c:.2f}  {-s:.2f}   0    0]",
+            f"[{s:.2f}   {c:.2f}   0    0]",
+            "[ 0     0    1    0]",
+            "[ 0     0    0    1]"
+        ]
+        calc_x = x*c - y*s
+        calc_y = x*s + y*c
+        calc_z = z
+        formulas = [
+            f"x' = x*cosθ - y*sinθ = {x:.2f}*{c:.2f} - {y:.2f}*{s:.2f}",
+            f"y' = x*sinθ + y*cosθ = {x:.2f}*{s:.2f} + {y:.2f}*{c:.2f}",
+            f"z' remains {z}"
+        ]
+    elif axis == 'X':
+        matrix = [
+            "[1.00  0.00   0.00   0.00]",
+            f"[0.00  {c:.2f}  {-s:.2f}   0.00]",
+            f"[0.00  {s:.2f}   {c:.2f}   0.00]",
+            "[0.00  0.00   0.00   1.00]"
+        ]
+        calc_x = x
+        calc_y = y*c - z*s
+        calc_z = y*s + z*c
+        formulas = [
+            f"y' = y*cosθ - z*sinθ = {y:.2f}*{c:.2f} - {z:.2f}*{s:.2f}",
+            f"z' = y*sinθ + z*cosθ = {y:.2f}*{s:.2f} + {z:.2f}*{c:.2f}",
+            f"x' remains {x}"
+        ]
+    elif axis == 'Y':
+        matrix = [
+            f"[{c:.2f}  0.00  {s:.2f}   0.00]",
+            "[0.00  1.00  0.00   0.00]",
+            f"[{-s:.2f}  0.00  {c:.2f}   0.00]",
+            "[0.00  0.00  0.00   1.00]"
+        ]
+        calc_x = x*c + z*s
+        calc_z = -x*s + z*c
+        calc_y = y
+        formulas = [
+            f"x' = x*cosθ + z*sinθ = {x:.2f}*{c:.2f} + {z:.2f}*{s:.2f}",
+            f"z' = -x*sinθ + z*cosθ = -{x:.2f}*{s:.2f} + {z:.2f}*{c:.2f}",
+            f"y' remains {y}"
+        ]
+    
+    print(f"\nExample: Rotating ({x}, {y}, {z}) by {degrees}° around {axis}-axis")
+    print("Rotation Matrix:")
+    for row in matrix: print(f"        {row}")
+    print("\nRotation Formulas:")
+    for formula in formulas: print(f"        {formula}")
+    print(f"\nResult: [{calc_x:.2f}, {calc_y:.2f}, {calc_z:.2f}, 1]")
+    print(f"Actual: {rotated}\n")
+    
+    visualize_rotation_3d(point, rotated, degrees, axis)
 
 if __name__ == '__main__':
-    # Example 1: 90° rotation of (1, 0, 0)
-    run_rotation_example(1, 0, 0, 90)
+    # Z-axis examples
+    run_rotation_example(1, 0, 0, 90, 'Z')
+    run_rotation_example(0, 1, 0, 180, 'Z')
+    run_rotation_example(2, 0, 3, 45, 'Z')
     
-    # Example 2: 180° rotation of (0, 1, 0)
-    run_rotation_example(0, 1, 0, 180)
+    # X-axis example
+    run_rotation_example(0, 1, 0, 90, 'X')
     
-    # Example 3: 45° rotation of (2, 0, 3)
-    run_rotation_example(2, 0, 3, 45)
+    # Y-axis example
+    run_rotation_example(1, 0, 0, 90, 'Y')
